@@ -1,6 +1,16 @@
 import serial
 import threading
 import time
+import logging
+import os
+# Get the path to the "Downloads" directory in the user's home directory
+downloads_dir = os.path.join(os.path.expanduser("~"), "Downloads")
+
+# Specify the file path for the log file in the "Downloads" directory
+log_file_path = os.path.join(downloads_dir, "serial_reader_logs.log")
+
+# Configure logging to write logs to the specified file
+logging.basicConfig(filename=log_file_path, level=logging.WARNING)
 
 def start_reading(ser):
     global stop_reading
@@ -11,13 +21,12 @@ def start_reading(ser):
             notLine = line.split(";")
             if len(notLine) >= 4:  # check if notLine has at least 4 elements
                 try:
-                    notLine[3] = int(notLine[3])
+                    notLine[3] = float(notLine[3])  # Convert to float instead of int
                     timedelay = (time.time() - timeNow) * 1000
-                    notLine[3] = (notLine[3] + timedelay)
+                    notLine[3] += timedelay
                     print(notLine)
                 except ValueError:
-                    print(f"Cannot convert {notLine[3]} to integer.")
-                    exit(1)
+                    logging.warning(f"Cannot convert '{notLine[3]}' to a number.")
 
 def user_input():
     global stop_reading
