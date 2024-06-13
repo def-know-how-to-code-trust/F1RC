@@ -2,10 +2,7 @@ import serial
 import threading
 import time
 
-ser = serial.Serial('COM5', 115200)  # open serial port
-stop_reading = False  # flag to control the reading process
-
-def start_reading():
+def start_reading(ser):
     global stop_reading
     while not stop_reading:
         timeNow = time.time()
@@ -22,11 +19,27 @@ def start_reading():
                     print(f"Cannot convert {notLine[3]} to integer.")
                     exit(1)
 
+def user_input():
+    global stop_reading
+    stop_reading = False  # flag to control the reading process
+    ser = None
+    while True:
+        try:
+            startCommand = input("Enter a port number (Go to Device Manager and find USB Serial Device under USB Port, E.g. COM5):")
+            ser = serial.Serial('COM'+str(startCommand), 115200)  # open serial port1
+        except IOError:
+            print("Port could not be opened try another port")
+        else:
+            print("Device Found")
+            break
 
-while True:
-    command = input("Enter 'start' to start reading, 'stop' to stop: ")
-    if command.lower() == 'start':
-        stop_reading = False
-        threading.Thread(target=start_reading).start()
-    elif command.lower() != 'start':
-        stop_reading = True
+    threading.Thread(target=start_reading, args=(ser,)).start()  # start reading in a separate thread
+
+    while True:
+        command = input("Enter 'stop' to stop: ")
+        if command.lower() == 'stop':
+            stop_reading = True
+            break
+
+# Start the user_input function in a separate thread
+threading.Thread(target=user_input).start()
