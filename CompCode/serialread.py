@@ -10,7 +10,7 @@ downloads_dir = os.path.join(os.path.expanduser("~"), "Downloads")
 log_file_path = os.path.join(downloads_dir, "serial_reader_logs.log")
 
 # Configure logging to write logs to the specified file
-logging.basicConfig(filename=log_file_path, level=logging.WARNING)
+#logging.basicConfig(level=logging.WARNING)
 
 def start_reading(ser):
     global stop_reading
@@ -24,23 +24,37 @@ def start_reading(ser):
                     notLine[3] = float(notLine[3])  # Convert to float instead of int
                     timedelay = (time.time() - timeNow) * 1000
                     notLine[3] += timedelay
-                    print(notLine)
+                    print(notLine)  
                 except ValueError:
                     logging.warning(f"Cannot convert '{notLine[3]}' to a number.")
-
+# 
 def user_input():
     global stop_reading
     stop_reading = False  # flag to control the reading process
     ser = None
     while True:
         try:
-            startCommand = input("Enter a port number (Go to Device Manager and find USB Serial Device under USB Port, E.g. COM5):")
-            ser = serial.Serial('COM'+str(startCommand), 115200)  # open serial port1
+            portNo = input("Enter a port number (Go to Device Manager and find USB Serial Device under USB Port, E.g. COM5):")
+            ser = serial.Serial('COM'+str(portNo), 115200)  # open serial port1
+
         except IOError:
             print("Port could not be opened try another port")
         else:
             print("Device Found")
             break
+            
+            
+    while True:
+        saveFileOrNot = input("Save Error Logs in a file? (y/n): ")
+        if saveFileOrNot.lower() == 'n':
+            logging.basicConfig(level=logging.WARNING)
+            break
+        elif saveFileOrNot.lower() == 'y': 
+            logging.basicConfig(filename=log_file_path, level=logging.WARNING)
+            break
+        else: 
+            print("Invalid Input: y/n only)")
+
 
     threading.Thread(target=start_reading, args=(ser,)).start()  # start reading in a separate thread
 
