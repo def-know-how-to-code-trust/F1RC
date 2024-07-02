@@ -23,28 +23,23 @@ def start_reading(ser,sessionDirectory):
                 line = ser.readline().decode('utf-8').strip()  # read a line from the micro:bit
                 if line:  # check if line is not empty
                     notLine = line.split(";")
-                    # if len(notLine) == 6:  # check if notLine has equal to 5 elements
-                    #     print(notLine)
-                    #     try:
-                    #         float(notLine[0])
-                    #         float(notLine[1])
-                    #         float(notLine[2])
-                    #         float(notLine[3])
-                    #         float(notLine[4])
-                    #         int(notLine[5])
-                    #     except ValueError as e:
-                    #         logging.error("An error occurred: $s",notLine)
-                    #     else:
-                    #         xAccel=float(notLine[0])
-                    #         yAccel=float(notLine[1])
-                    #         zAccel=float(notLine[2])
-                    #         strengthAccel=float(notLine[3])
-                    #         speed=float(notLine[4])
-                    #         heading=float(notLine[5])
-                    #         timestamp=time.time()
+                    if len(notLine) == 3:  # check if notLine has equal to 5 elements
+                        print(notLine)
+                        try:
+                            float(notLine[0])
+                            float(notLine[1])
+                            float(notLine[2])
+                        except ValueError as e:
+                            logging.error("An error occurred: $s",notLine)
+                        else:
+                            speed=float(notLine[0])
+                            yAccel=float(notLine[1])
+                            heading=float(notLine[2])
+                            timestamp=time.time()
                             
-                    #         #write the data to the file
-                    #         writer.writerow([xAccel,yAccel,zAccel,strengthAccel,speed,heading,timestamp])
+                            
+                            #write the data to the file
+                            writer.writerow([speed,yAccel,heading,timestamp])
                     print(notLine)
     else:
         print("sessionDirectory is empty")                          
