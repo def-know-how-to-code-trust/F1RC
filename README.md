@@ -1,6 +1,16 @@
 
 > Open this page at [https://def-know-how-to-code-trust.github.io/asdf/](https://def-know-how-to-code-trust.github.io/asdf/)
 
+##IMPORTANT INSTRUCTIONS (ASSUMING YOU HAVE ALREADY LOADED THE CODE FROM THE .hex files into each microbit and have set up all the circuitries for the microbits)
+1. Open serialread.py to record the car measurements and internal ratios for use to calculate the speed of the car.
+2. Create a folder anywhere in your system where the telemetry data will be recorded to.
+3. Copy the path and paste it into the (Each time you run serialread.py, a new subfolder will be created within this folder for that session)
+4. Plug in your microbit that is already loaded with the microbit-receiver2.hex file into the system.
+5. Go to device manager>Ports. Look for a device that is called USB Serial Device. See which COM is it in and put the COM number for PORT_NO.
+Once you are done with this section, run serialread.py
+
+
+
 ## Use as Extension
 
 This repository can be added as an **extension** in MakeCode.

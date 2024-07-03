@@ -4,13 +4,16 @@ import time
 import logging
 import os
 import csv
-# Get the path to the "Downloads" directory in the user's home directory
-downloads_dir = os.path.join(os.path.expanduser("~"), "Downloads")
 
-# Specify the file path for the log file in the "Downloads" directory
-log_file_path = os.path.join(downloads_dir, "serial_reader_logs.log")
-# Configure logging to write logs to the specified file
-#logging.basicConfig(level=logging.WARNING)
+
+#Enter the RC Car speed calculation relevent details here
+IGR:float = 2.6 # The internal gear ratio of the car
+WHEEL_DIAM:float = 0.4 #The diameter of wheel 
+
+#Enter the OS path that the telemetries should be stored to (Each time you run serialread.py, a new subfolder will be created within this folder for that session)
+TELEMETRY_PATH=r"C:\Users\ching\Downloads\RcSessions"
+#Go to device manager>Ports. Look for a device that is called USB Serial Device. See which COM is it in (e.g. if it says COM16, put 16 below here)
+PORT_NO:int=16
 
 def start_reading(ser,sessionDirectory):
     global stop_reading
@@ -50,21 +53,22 @@ def user_input():
     stop_reading = False  # flag to control the reading process
     ser = None
     sessionDirectory= None
-    while True:
+    checksPassed=True
+    while checksPassed:
         try:
-            portNo = input("Enter a port number (Go to Device Manager and find USB Serial Device under USB Port, E.g. COM5):")
+            portNo = PORT_NO
             ser = serial.Serial('COM'+str(portNo), 115200)  # open serial port1
-
         except IOError:
             print("Port could not be opened try another port")
+            checksPassed=False
         else:
             print("Device Found")
             break
 
-    while True:
-            folderDirectory=input("Sessions Folder Path? (Stores a folder containing session data at this path you specify): ")
+    while checksPassed:
+            folderDirectory=TELEMETRY_PATH
             if os.path.exists(folderDirectory):
-                sessionDirectory=folderDirectory+"\\"+"session_"+str(time.time())
+                sessionDirectory=folderDirectory+r"\session_"+str(time.time())
                 os.mkdir(sessionDirectory)
                 with open(os.path.join(sessionDirectory,"telemetry.csv"),"w",newline="",) as file:
                     header=["x_accel", "y_accel", "z_accel","strength_accel","speed", "heading","timestamp"]
@@ -74,14 +78,15 @@ def user_input():
                 break
             else:
                 print("Directory does not exist. Try again...")
+                checksPassed=False
 
-    threading.Thread(target=start_reading, args=(ser,sessionDirectory,)).start()  # start reading in a separate thread
-
-    while True:
-        command = input("Enter 'stop' to stop: ")
-        if command.lower() == 'stop':
-            stop_reading = True
-            break
+    if checksPassed:
+        threading.Thread(target=start_reading, args=(ser,sessionDirectory,)).start()  # start reading in a separate thread
+        while True:
+            command = input("Enter 'stop' to stop: ")
+            if command.lower() == 'stop':
+                stop_reading = True
+                break
 
 # Start the user_input function in a separate thread
 threading.Thread(target=user_input).start()
