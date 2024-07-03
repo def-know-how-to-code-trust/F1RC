@@ -15,6 +15,9 @@ TELEMETRY_PATH=r"C:\Users\ching\Downloads\RcSessions"
 #Go to device manager>Ports. Look for a device that is called USB Serial Device. See which COM is it in (e.g. if it says COM16, put 16 below here)
 PORT_NO:int=16
 
+
+### format to save the data in
+HEADER=["speed","y_accel","heading","timestamp"]
 def start_reading(ser,sessionDirectory):
     global stop_reading
     if sessionDirectory!="" or sessionDirectory!=None:
@@ -71,7 +74,7 @@ def user_input():
                 sessionDirectory=folderDirectory+r"\session_"+str(time.time())
                 os.mkdir(sessionDirectory)
                 with open(os.path.join(sessionDirectory,"telemetry.csv"),"w",newline="",) as file:
-                    header=["x_accel", "y_accel", "z_accel","strength_accel","speed", "heading","timestamp"]
+                    header=HEADER
                     writer = csv.writer(file)
                     writer.writerow(header)
                 logging.basicConfig(filename=sessionDirectory+"//"+"log", level=logging.WARNING)

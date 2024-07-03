@@ -4,7 +4,7 @@ import os
 import pandas as pd
 import time
 
-downloads_dir = "C:/Users/chinghta/Downloads/RcCar/session_1719368855.1100821"
+downloads_dir = r"C:\Users\ching\Downloads\RcSessions\session_1720020313.9864478"
 
 # Use a specific style (optional)
 plt.style.use("fivethirtyeight")
@@ -25,6 +25,7 @@ def animate(i):
     min_time = current_time - 30  # Last 30 seconds
     df_recent = df[df["timestamp"] >= min_time]
     
+    df.head()
     # Clear the previous plots
     ax1.clear()
     ax2.clear()
@@ -43,11 +44,8 @@ def animate(i):
     ax2.set_title("Heading vs. Timestamp (Last 30 Seconds)")
     ax2.legend()
 
-# Initialize the animation with some initial data
-animate(1)
-
 # Start the animation loop with an interval of 100 milliseconds
-ani = animation.FuncAnimation(fig, animate, interval=100)
+ani = animation.FuncAnimation(fig, animate,cache_frame_data=False, interval=100)
 
 # Adjust layout to prevent overlapping
 plt.tight_layout()
